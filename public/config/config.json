@@ -1,6 +1,6 @@
 {
-  "CONTRACT_ADDRESS": "0x00000000000000000000",
-  "SCAN_LINK": "https://polygonscan.com/token/",
+  "CONTRACT_ADDRESS": "0xc01739BB4Fe0cbE65CD9780c6C39564013c07782",
+  "SCAN_LINK": "https://rinkeby.etherscan.io/token/0xc01739BB4Fe0cbE65CD9780c6C39564013c07782",
   "NETWORK": {
     "NAME": "Rinkeby",
     "SYMBOL": "ETH",
@@ -10,9 +10,9 @@
   "SYMBOL": "FIIB",
   "MAX_SUPPLY": 200,
   "WEI_COST": 0,
-  "DISPLAY_COST": 0.2,
+  "DISPLAY_COST": 0.005,
   "GAS_LIMIT": 285000,
   "MARKETPLACE": "Opensea",
-  "MARKETPLACE_LINK": "https://opensea.io/collection/",
+  "MARKETPLACE_LINK": "https://testnets.opensea.io/collection/fived-infinities-infinity-badge-v2",
   "SHOW_BACKGROUND": true
 }

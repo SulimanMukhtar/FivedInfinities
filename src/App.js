@@ -8,7 +8,7 @@ const keccak256 = require("keccak256");
 const { MerkleTree } = require("merkletreejs");
 
 
-const addresses = ["0x9A6Aa615aeA32d6Cf70849fda9683Bc01f40f08E", "0xf81557c97c00cf7b290245704Eb0675e2cEFC7a6"];
+const addresses = ["0x9A6Aa615aeA32d6Cf70849fda9683Bc01f40f08E", "0x2199ffcf8903d3395240Eb772Caeb0990562b37B"];
 
 const truncate = (input, len) =>
   input.length > len ? `${input.substring(0, len)}...` : input;
@@ -129,29 +129,23 @@ function App() {
 
     const leaf = addresses.map(addr => keccak256(addr));
     const Merkletree = new MerkleTree(leaf, keccak256, { sortPairs: true });
-
     const rootHash = Merkletree.getRoot();
     const adddd = keccak256(blockchain.account);
-
     const proof = Merkletree.getHexProof(adddd);
-
     console.log(Merkletree.toString());
-
-    let publicCost = await blockchain.smartContract.methods.publicCost().call();
-    let whitelistCost = await blockchain.smartContract.methods.whitelistCost().call();
-    let gasLimit = CONFIG.GAS_LIMIT;
     let totalCostWei;
-    let totalGasLimit = String(gasLimit * mintAmount);
-    console.log("Gas limit: ", totalGasLimit);
+
     setFeedback(`Minting your ${CONFIG.NFT_NAME}...`);
     setClaimingNft(true);
-    let whitlistStatus = await blockchain.smartContract.methods.whitelistEnabled().call();
-    if (whitlistStatus === false) {
+    let whitelistStatus = await blockchain.smartContract.methods.whitelistEnabled().call();
+    let publicCost = await blockchain.smartContract.methods.publicCost().call();
+    let whitelistCost = await blockchain.smartContract.methods.whitelistCost().call();
+
+    if (whitelistStatus === false) {
       totalCostWei = String(publicCost * mintAmount);
       await blockchain.smartContract.methods
         .mint(mintAmount)
         .call({
-          gasLimit: String(totalGasLimit),
           to: CONFIG.CONTRACT_ADDRESS,
           from: blockchain.account,
           value: totalCostWei,
@@ -173,12 +167,11 @@ function App() {
           }
           setClaimingNft(false);
         });
-    } else if (whitlistStatus === true) {
+    } else if (whitelistStatus === true) {
       totalCostWei = String(whitelistCost * mintAmount);
       await blockchain.smartContract.methods
         .whitelistMint(mintAmount, proof)
         .call({
-          gasLimit: String(totalGasLimit),
           to: CONFIG.CONTRACT_ADDRESS,
           from: blockchain.account,
           value: totalCostWei,
@@ -206,11 +199,8 @@ function App() {
 
   async function publicMint() {
     let publicCost = await blockchain.smartContract.methods.publicCost().call();
-    let gasLimit = CONFIG.GAS_LIMIT;
-    let totalGasLimit = String(gasLimit * mintAmount);
     let totalCostWei = String(publicCost * mintAmount);
     await blockchain.smartContract.methods.mint(mintAmount).send({
-      gasLimit: String(totalGasLimit),
       to: CONFIG.CONTRACT_ADDRESS,
       from: blockchain.account,
       value: totalCostWei,
@@ -225,18 +215,14 @@ function App() {
   async function whitelistMint() {
     const leaf = addresses.map(addr => keccak256(addr));
     const Merkletree = new MerkleTree(leaf, keccak256, { sortPairs: true });
-
     const rootHash = Merkletree.getRoot();
     const adddd = keccak256(blockchain.account);
-
     const proof = Merkletree.getHexProof(adddd);
 
     let whitelistCost = await blockchain.smartContract.methods.whitelistCost().call();
-    let gasLimit = CONFIG.GAS_LIMIT;
-    let totalGasLimit = String(gasLimit * mintAmount);
     let totalCostWei = String(whitelistCost * mintAmount);
+
     await blockchain.smartContract.methods.whitelistMint(mintAmount, proof).send({
-      gasLimit: String(totalGasLimit),
       to: CONFIG.CONTRACT_ADDRESS,
       from: blockchain.account,
       value: totalCostWei,
@@ -262,7 +248,8 @@ function App() {
     setMintAmount(newMintAmount);
   };
 
-  const getData = () => {
+  const getData = async () => {
+
     if (blockchain.account !== "" && blockchain.smartContract !== null) {
       dispatch(fetchData(blockchain.account));
     }
@@ -501,7 +488,7 @@ function App() {
           </s.Container>
         </ResponsiveWrapper>
         <s.SpacerMedium />
-        <s.Container jc={"center"} ai={"center"} style={{ width: "70%" }}>
+        {/* <s.Container jc={"center"} ai={"center"} style={{ width: "70%" }}>
           <s.TextDescription
             style={{
               textAlign: "center",
@@ -513,7 +500,7 @@ function App() {
             Once you make the purchase, you cannot undo this action.
           </s.TextDescription>
           <s.SpacerSmall />
-          {/* <s.TextDescription
+           <s.TextDescription
             style={{
               textAlign: "center",
               color: "var(--primary-text)",
@@ -522,8 +509,8 @@ function App() {
             We have set the gas limit to {CONFIG.GAS_LIMIT} for the contract to
             successfully mint your NFT. We recommend that you don't lower the
             gas limit.
-          </s.TextDescription> */}
-        </s.Container>
+          </s.TextDescription> 
+        </s.Container> */}
       </s.Container>
     </s.Screen>
   );
